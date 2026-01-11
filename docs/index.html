@@ -70,7 +70,7 @@ body {
 .title-row {
     display: flex;
     align-items: center;
-    gap: 28px; /* moved splash further away */
+    gap: 28px;
 }
 
 h1 {
@@ -79,19 +79,38 @@ h1 {
     color: #7CFF7C;
 }
 
-/* MINECRAFT SPLASH ZOOM EFFECT */
+/* SPLASH */
 .splash {
     font-size: 18px;
     color: #FFD83D;
     text-shadow: 2px 2px #000, 3px 3px #000;
     white-space: nowrap;
-    pointer-events: none;
     animation: splashZoom 1.2s infinite alternate ease-in-out;
 }
 
 @keyframes splashZoom {
     from { transform: scale(1); }
     to   { transform: scale(1.12); }
+}
+
+/* MUSIC CONTROLS */
+.music-controls {
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.music-controls button {
+    font-family: Minecraft, monospace;
+    padding: 6px 10px;
+    background: #55aa55;
+    border: none;
+    cursor: pointer;
+}
+
+.music-controls input {
+    width: 100px;
 }
 
 /* LAYOUT */
@@ -101,12 +120,7 @@ h1 {
     flex-wrap: wrap;
 }
 
-.left {
-    flex: 1;
-    min-width: 300px;
-}
-
-.right {
+.left, .right {
     flex: 1;
     min-width: 300px;
 }
@@ -116,11 +130,6 @@ iframe {
     height: 260px;
     border: 2px solid #111;
     background: #000;
-}
-
-p {
-    line-height: 1.5;
-    margin: 8px 0;
 }
 
 img.hero {
@@ -164,6 +173,11 @@ img.hero {
 
 <body>
 
+<!-- AUDIO -->
+<audio id="bgMusic" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
 <!-- BOT VERIFY -->
 <div id="verifyOverlay">
   <div class="verify-box">
@@ -184,6 +198,14 @@ img.hero {
             <div class="splash" id="splashText"></div>
         </div>
 
+        <!-- MUSIC CONTROLS -->
+        <div class="music-controls">
+            <button onclick="toggleMusic()">Play / Pause</button>
+            <label>Volume</label>
+            <input type="range" min="0" max="1" step="0.01"
+                   value="0.3" oninput="setVolume(this.value)">
+        </div>
+
         <div class="content-row">
             <div class="left">
                 <img src="nax.png" alt="NAX Launcher" class="hero">
@@ -191,11 +213,6 @@ img.hero {
                 <p>
                     NAX Launcher is a Minecraft launcher focused on
                     classic, alpha, beta, and modern versions of Minecraft.
-                </p>
-
-                <p>
-                    Designed for offline play with automatic Java handling
-                    and an installed version manager.
                 </p>
 
                 <a class="download"
@@ -210,10 +227,8 @@ img.hero {
             </div>
 
             <div class="right">
-                <!-- YOUTUBE TRAILER -->
                 <iframe
                     src="https://www.youtube.com/embed/qBI7LNkMXEE"
-                    title="NAX Launcher Trailer"
                     allowfullscreen>
                 </iframe>
             </div>
@@ -232,15 +247,6 @@ img.hero {
         </ul>
     </div>
 
-    <div class="panel">
-        <h2>Notes</h2>
-        <p class="small">
-            This launcher is provided as-is.
-            If Windows shows a warning, click
-            <b>More info → Run anyway</b>.
-        </p>
-    </div>
-
     <div class="footer">
         NAX Launcher • Made by bb771
     </div>
@@ -248,6 +254,19 @@ img.hero {
 </div>
 
 <script>
+/* MUSIC */
+const music = document.getElementById("bgMusic");
+music.volume = 0.3;
+
+function toggleMusic() {
+    if (music.paused) music.play();
+    else music.pause();
+}
+
+function setVolume(v) {
+    music.volume = v;
+}
+
 /* BOT VERIFY */
 if (localStorage.getItem("nax_verified")) {
     document.getElementById("verifyOverlay").style.display = "none";
@@ -257,29 +276,25 @@ function verify() {
     if (verifyInput.value.trim() === "7") {
         localStorage.setItem("nax_verified", "1");
         document.getElementById("verifyOverlay").style.display = "none";
+        music.play(); // start music after verify
     } else {
         verifyMsg.textContent = "Wrong answer.";
     }
 }
 
-/* SPLASH TEXT */
+/* SPLASH */
 const splashes = [
     "Now in beta!",
     "Classic vibes!",
     "100% offline!",
-    "Not a virus!",
     "Open source!",
     "Java powered!",
     "Creeper approved!",
     "Old-school fun!",
     "Survival ready!",
     "Hello world!",
-    "10K!",
-    "Pong!",
-    "Ping!",
-    "betamc.org",
     "ADMIN!",
-    "10% broken :("
+    "DOWNLOAD NOW!"
 ];
 
 document.getElementById("splashText").textContent =
