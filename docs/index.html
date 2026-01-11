@@ -18,7 +18,7 @@ body {
     color: #e0e0e0;
 }
 
-/* BOT VERIFY OVERLAY */
+/* BOT VERIFY */
 #verifyOverlay {
     position: fixed;
     inset: 0;
@@ -55,7 +55,7 @@ body {
 
 /* SITE */
 .wrapper {
-    max-width: 780px;
+    max-width: 1100px;
     margin: 40px auto;
     padding: 0 15px;
 }
@@ -70,7 +70,7 @@ body {
 .title-row {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 28px; /* moved splash further away */
 }
 
 h1 {
@@ -79,14 +79,43 @@ h1 {
     color: #7CFF7C;
 }
 
-/* FIXED SPLASH */
+/* MINECRAFT SPLASH ZOOM EFFECT */
 .splash {
     font-size: 18px;
     color: #FFD83D;
-    transform: rotate(-20deg);
     text-shadow: 2px 2px #000, 3px 3px #000;
     white-space: nowrap;
     pointer-events: none;
+    animation: splashZoom 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes splashZoom {
+    from { transform: scale(1); }
+    to   { transform: scale(1.12); }
+}
+
+/* LAYOUT */
+.content-row {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.left {
+    flex: 1;
+    min-width: 300px;
+}
+
+.right {
+    flex: 1;
+    min-width: 300px;
+}
+
+iframe {
+    width: 100%;
+    height: 260px;
+    border: 2px solid #111;
+    background: #000;
 }
 
 p {
@@ -149,32 +178,46 @@ img.hero {
 <div class="wrapper">
 
     <div class="panel">
+
         <div class="title-row">
             <h1>NAX Launcher</h1>
             <div class="splash" id="splashText"></div>
         </div>
 
-        <img src="nax.png" alt="NAX Launcher" class="hero">
+        <div class="content-row">
+            <div class="left">
+                <img src="nax.png" alt="NAX Launcher" class="hero">
 
-        <p>
-            NAX Launcher is a Minecraft launcher focused on
-            classic, alpha, beta, and modern versions of Minecraft.
-        </p>
+                <p>
+                    NAX Launcher is a Minecraft launcher focused on
+                    classic, alpha, beta, and modern versions of Minecraft.
+                </p>
 
-        <p>
-            Designed for offline play with automatic Java handling
-            and an installed version manager.
-        </p>
+                <p>
+                    Designed for offline play with automatic Java handling
+                    and an installed version manager.
+                </p>
 
-        <a class="download"
-           href="https://github.com/bb7716546/NAX-LAUNCHER/releases/download/v1.0.0/NAX_LAUNCHER.exe"
-           target="_blank">
-            Download NAX_LAUNCHER.exe
-        </a>
+                <a class="download"
+                   href="https://github.com/bb7716546/NAX-LAUNCHER/releases/download/v1.0.0/NAX_LAUNCHER.exe"
+                   target="_blank">
+                    Download NAX_LAUNCHER.exe
+                </a>
 
-        <p class="small">
-            Windows 10 / 11 • No Microsoft login required
-        </p>
+                <p class="small">
+                    Windows 10 / 11 • No Microsoft login required
+                </p>
+            </div>
+
+            <div class="right">
+                <!-- YOUTUBE TRAILER -->
+                <iframe
+                    src="https://www.youtube.com/embed/VIDEO_ID"
+                    title="NAX Launcher Trailer"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
     </div>
 
     <div class="panel">
@@ -219,7 +262,7 @@ function verify() {
     }
 }
 
-/* FIXED SPLASH LIST */
+/* SPLASH TEXT */
 const splashes = [
     "Now in beta!",
     "Classic vibes!",
