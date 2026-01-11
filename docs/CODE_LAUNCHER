@@ -8,7 +8,7 @@
 # Install + Launch lock
 # Solid blue background
 # Installs to C:\NAX_LAUNCHER\
-# Made by bb771
+# Made by bb771 and the help of chat-gpt
 # =================================================
 
 import sys, os, json, socket, subprocess, threading, hashlib, stat, shutil, requests
