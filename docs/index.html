@@ -24,7 +24,12 @@ body {
     border: 2px solid #111;
     padding: 20px;
     margin-bottom: 20px;
-    position: relative;
+}
+
+.title-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
 
 h1 {
@@ -33,11 +38,8 @@ h1 {
     color: #7CFF7C;
 }
 
-/* ===== MINECRAFT SPLASH TEXT (FIXED) ===== */
+/* Minecraft-style splash */
 .splash {
-    position: absolute;
-    right: 18px;
-    top: 18px;
     font-weight: bold;
     font-size: 18px;
     color: #FFD83D;
@@ -45,10 +47,9 @@ h1 {
     text-shadow:
         2px 2px #000,
         3px 3px #000;
+    white-space: nowrap;
     pointer-events: none;
 }
-
-/* ======================================= */
 
 h2 {
     margin-top: 0;
@@ -105,8 +106,12 @@ img.hero {
 
     <!-- MAIN PANEL -->
     <div class="panel">
-        <h1>NAX Launcher</h1>
-        <div class="splash" id="splashText"></div>
+
+        <!-- TITLE + SPLASH -->
+        <div class="title-row">
+            <h1>NAX Launcher</h1>
+            <div class="splash" id="splashText"></div>
+        </div>
 
         <img src="nax.png" alt="NAX Launcher" class="hero">
 
@@ -161,7 +166,6 @@ img.hero {
 </div>
 
 <script>
-/* Minecraft-style splash messages */
 const splashes = [
     "Now in beta!",
     "Classic vibes!",
@@ -173,10 +177,12 @@ const splashes = [
     "Old-school fun!",
     "Survival ready!",
     "Hello world!"
-    "ADMIN!"
-    "10K!"
+    "10K"
+    "Pong!"
+    "Ping!"
     "betamc.org"
-    "10% broken"
+    "ADMIN!"
+    "10% broken :("
 ];
 
 document.getElementById("splashText").textContent =
