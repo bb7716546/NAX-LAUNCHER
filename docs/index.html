@@ -33,23 +33,22 @@ h1 {
     color: #7CFF7C;
 }
 
-/* Minecraft splash text */
+/* ===== MINECRAFT SPLASH TEXT (FIXED) ===== */
 .splash {
     position: absolute;
-    right: 20px;
+    right: 18px;
     top: 18px;
-    color: gold;
     font-weight: bold;
-    font-size: 16px;
-    transform: rotate(-15deg);
-    text-shadow: 2px 2px #000;
-    animation: splash 0.5s infinite alternate;
+    font-size: 18px;
+    color: #FFD83D;
+    transform: rotate(-20deg);
+    text-shadow:
+        2px 2px #000,
+        3px 3px #000;
+    pointer-events: none;
 }
 
-@keyframes splash {
-    from { transform: rotate(-15deg) scale(1); }
-    to   { transform: rotate(-15deg) scale(1.05); }
-}
+/* ======================================= */
 
 h2 {
     margin-top: 0;
@@ -85,12 +84,6 @@ img.hero {
 
 .download:hover {
     background: #66cc66;
-}
-
-.counter {
-    margin-top: 6px;
-    font-size: 13px;
-    opacity: 0.85;
 }
 
 .small {
@@ -129,14 +122,9 @@ img.hero {
 
         <a class="download"
            href="https://github.com/bb7716546/NAX-LAUNCHER/releases/download/v1.0.0/NAX_LAUNCHER.exe"
-           target="_blank"
-           onclick="incrementDownloads()">
+           target="_blank">
             Download NAX_LAUNCHER.exe
         </a>
-
-        <div class="counter">
-            Downloads: <span id="downloadCount">0</span>
-        </div>
 
         <p class="small">
             Windows 10 / 11 • No Microsoft login required
@@ -167,47 +155,32 @@ img.hero {
     </div>
 
     <div class="footer">
-        NAX Launcher • Made by bb771 and the help of chat-gpt
+        NAX Launcher • Made by bb771
     </div>
 
 </div>
 
 <script>
-/* Minecraft splash texts */
+/* Minecraft-style splash messages */
 const splashes = [
     "Now in beta!",
-    "100% offline!",
     "Classic vibes!",
-    "Made with Python!",
+    "100% offline!",
     "Not a virus!",
-    "Hello world!",
-    "Java included!",
-    "Singleplayer forever!",
     "Open source!",
-    "Creeper approved!"
-    "E"
-    "you better like mangos"
-    "betamc.org"
+    "Java powered!",
+    "Creeper approved!",
+    "Old-school fun!",
+    "Survival ready!",
+    "Hello world!"
     "ADMIN!"
-    "bb771"
-    "10% Broken!"
-    "10k!"
+    "10K!"
+    "betamc.org"
+    "10% broken"
 ];
 
 document.getElementById("splashText").textContent =
     splashes[Math.floor(Math.random() * splashes.length)];
-
-/* Download counter (local) */
-const key = "nax_downloads";
-let count = localStorage.getItem(key);
-if (!count) count = 0;
-document.getElementById("downloadCount").textContent = count;
-
-function incrementDownloads() {
-    count++;
-    localStorage.setItem(key, count);
-    document.getElementById("downloadCount").textContent = count;
-}
 </script>
 
 </body>
