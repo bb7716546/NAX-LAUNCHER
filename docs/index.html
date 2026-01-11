@@ -6,13 +6,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+@font-face {
+    font-family: "Minecraft";
+    src: url("Minecraft.ttf");
+}
+
 body {
     margin: 0;
     background: #2b2b2b;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Minecraft, Arial, Helvetica, sans-serif;
     color: #e0e0e0;
 }
 
+/* BOT VERIFY OVERLAY */
+#verifyOverlay {
+    position: fixed;
+    inset: 0;
+    background: #1b1b1b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.verify-box {
+    background: #111;
+    border: 3px solid #000;
+    padding: 25px;
+    text-align: center;
+    max-width: 300px;
+}
+
+.verify-box input {
+    width: 100%;
+    margin: 8px 0;
+    padding: 6px;
+    font-family: Minecraft, monospace;
+}
+
+.verify-box button {
+    margin-top: 10px;
+    padding: 8px 14px;
+    font-family: Minecraft, monospace;
+    background: #55aa55;
+    border: none;
+    cursor: pointer;
+}
+
+/* SITE */
 .wrapper {
     max-width: 780px;
     margin: 40px auto;
@@ -38,23 +79,14 @@ h1 {
     color: #7CFF7C;
 }
 
-/* Minecraft-style splash */
+/* FIXED SPLASH */
 .splash {
-    font-weight: bold;
     font-size: 18px;
     color: #FFD83D;
     transform: rotate(-20deg);
-    text-shadow:
-        2px 2px #000,
-        3px 3px #000;
+    text-shadow: 2px 2px #000, 3px 3px #000;
     white-space: nowrap;
     pointer-events: none;
-}
-
-h2 {
-    margin-top: 0;
-    font-size: 18px;
-    color: #ffffff;
 }
 
 p {
@@ -102,12 +134,21 @@ img.hero {
 </head>
 
 <body>
+
+<!-- BOT VERIFY -->
+<div id="verifyOverlay">
+  <div class="verify-box">
+    <h3>Verify you are human</h3>
+    <p>What is <b>3 + 4</b>?</p>
+    <input id="verifyInput" placeholder="Answer">
+    <button onclick="verify()">Enter Site</button>
+    <p id="verifyMsg"></p>
+  </div>
+</div>
+
 <div class="wrapper">
 
-    <!-- MAIN PANEL -->
     <div class="panel">
-
-        <!-- TITLE + SPLASH -->
         <div class="title-row">
             <h1>NAX Launcher</h1>
             <div class="splash" id="splashText"></div>
@@ -136,7 +177,6 @@ img.hero {
         </p>
     </div>
 
-    <!-- FEATURES -->
     <div class="panel">
         <h2>Features</h2>
         <ul>
@@ -149,7 +189,6 @@ img.hero {
         </ul>
     </div>
 
-    <!-- NOTES -->
     <div class="panel">
         <h2>Notes</h2>
         <p class="small">
@@ -166,6 +205,21 @@ img.hero {
 </div>
 
 <script>
+/* BOT VERIFY */
+if (localStorage.getItem("nax_verified")) {
+    document.getElementById("verifyOverlay").style.display = "none";
+}
+
+function verify() {
+    if (verifyInput.value.trim() === "7") {
+        localStorage.setItem("nax_verified", "1");
+        document.getElementById("verifyOverlay").style.display = "none";
+    } else {
+        verifyMsg.textContent = "Wrong answer.";
+    }
+}
+
+/* FIXED SPLASH LIST */
 const splashes = [
     "Now in beta!",
     "Classic vibes!",
@@ -176,12 +230,12 @@ const splashes = [
     "Creeper approved!",
     "Old-school fun!",
     "Survival ready!",
-    "Hello world!"
-    "10K"
-    "Pong!"
-    "Ping!"
-    "betamc.org"
-    "ADMIN!"
+    "Hello world!",
+    "10K!",
+    "Pong!",
+    "Ping!",
+    "betamc.org",
+    "ADMIN!",
     "10% broken :("
 ];
 
