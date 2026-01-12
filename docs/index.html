@@ -79,12 +79,10 @@ h1 {
     color: #7CFF7C;
 }
 
-/* SPLASH */
 .splash {
     font-size: 18px;
     color: #FFD83D;
     text-shadow: 2px 2px #000, 3px 3px #000;
-    white-space: nowrap;
     animation: splashZoom 1.2s infinite alternate ease-in-out;
 }
 
@@ -93,212 +91,223 @@ h1 {
     to   { transform: scale(1.12); }
 }
 
-/* MUSIC CONTROLS */
+/* MUSIC */
 .music-controls {
     margin-top: 10px;
     display: flex;
     gap: 10px;
-    align-items: center;
 }
 
 .music-controls button {
-    font-family: Minecraft, monospace;
+    font-family: Minecraft;
     padding: 6px 10px;
     background: #55aa55;
     border: none;
     cursor: pointer;
 }
 
-.music-controls input {
-    width: 100px;
-}
-
-/* LAYOUT */
-.content-row {
+/* SECRET CHAT */
+#secretOverlay {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    color: #ff3333;
+    font-family: Minecraft, monospace;
     display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+    z-index: 10000;
 }
 
-.left, .right {
-    flex: 1;
-    min-width: 300px;
+#secretOverlay.active {
+    opacity: 1;
+    pointer-events: auto;
 }
 
-iframe {
-    width: 100%;
-    height: 260px;
-    border: 2px solid #111;
-    background: #000;
-}
-
-img.hero {
-    width: 100%;
-    max-height: 260px;
-    object-fit: contain;
-    display: block;
-    margin: 15px auto;
-    background: #000;
-    border: 2px solid #111;
-}
-
-.download {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 12px 20px;
-    background: #55aa55;
-    color: #000;
-    font-weight: bold;
-    text-decoration: none;
-    border: 2px solid #2e7d32;
-}
-
-.download:hover {
-    background: #66cc66;
-}
-
-.small {
-    font-size: 13px;
-    opacity: 0.85;
-}
-
-.footer {
+.secret-header {
+    padding: 15px;
+    border-bottom: 2px solid #300;
     text-align: center;
-    font-size: 12px;
-    opacity: 0.6;
-    margin-top: 25px;
+    font-size: 22px;
+}
+
+.secret-chat {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    font-size: 14px;
+}
+
+.secret-input {
+    border-top: 2px solid #300;
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.secret-input input {
+    flex: 1;
+    background: #111;
+    color: #ff3333;
+    border: 1px solid #400;
+    padding: 8px;
+    font-family: Minecraft, monospace;
+}
+
+.secret-input button {
+    background: #400;
+    color: #ff3333;
+    border: none;
+    padding: 8px 14px;
+    cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<!-- AUDIO -->
 <audio id="bgMusic" loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- BOT VERIFY -->
+<!-- VERIFY -->
 <div id="verifyOverlay">
   <div class="verify-box">
     <h3>Verify you are human</h3>
     <p>What is <b>3 + 4</b>?</p>
-    <input id="verifyInput" placeholder="Answer">
+    <input id="verifyInput">
     <button onclick="verify()">Enter Site</button>
     <p id="verifyMsg"></p>
   </div>
 </div>
 
+<!-- SECRET CHAT -->
+<div id="secretOverlay">
+    <div class="secret-header">NAX-CHAT</div>
+    <div class="secret-chat" id="chatLog"></div>
+    <div class="secret-input">
+        <input id="chatInput" placeholder="Type message...">
+        <button onclick="sendMsg()">SEND</button>
+    </div>
+</div>
+
 <div class="wrapper">
-
     <div class="panel">
-
         <div class="title-row">
             <h1>NAX Launcher</h1>
             <div class="splash" id="splashText"></div>
         </div>
-
-        <!-- MUSIC CONTROLS -->
         <div class="music-controls">
             <button onclick="toggleMusic()">Play / Pause</button>
-            <label>Volume</label>
-            <input type="range" min="0" max="1" step="0.01"
-                   value="0.3" oninput="setVolume(this.value)">
-        </div>
-
-        <div class="content-row">
-            <div class="left">
-                <img src="nax.png" alt="NAX Launcher" class="hero">
-
-                <p>
-                    NAX Launcher is a Minecraft launcher focused on
-                    classic, alpha, beta, and modern versions of Minecraft.
-                </p>
-
-                <a class="download"
-                   href="https://github.com/bb7716546/NAX-LAUNCHER/releases/download/v1.0.0/NAX_LAUNCHER.exe"
-                   target="_blank">
-                    Download NAX_LAUNCHER.exe
-                </a>
-
-                <p class="small">
-                    Windows 10 / 11 • No Microsoft login required
-                </p>
-            </div>
-
-            <div class="right">
-                <iframe
-                    src="https://www.youtube.com/embed/qBI7LNkMXEE"
-                    allowfullscreen>
-                </iframe>
-            </div>
         </div>
     </div>
-
-    <div class="panel">
-        <h2>Features</h2>
-        <ul>
-            <li>Classic / Alpha / Beta / Release / Snapshot support</li>
-            <li>Installed versions list</li>
-            <li>Automatic Java version selection</li>
-            <li>Offline mode</li>
-            <li>RAM selector</li>
-            <li>Crash reporting</li>
-        </ul>
-    </div>
-
-    <div class="footer">
-        NAX Launcher • Made by bb771
-    </div>
-
 </div>
 
+<!-- ================= FIREBASE CHAT ================= -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getFirestore, collection, addDoc, query, orderBy,
+  onSnapshot, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+/* 🔴 PASTE YOUR FIREBASE CONFIG HERE 🔴 */
+const firebaseConfig = {
+  apiKey: "PASTE",
+  authDomain: "PASTE",
+  projectId: "PASTE",
+  storageBucket: "PASTE",
+  messagingSenderId: "PASTE",
+  appId: "PASTE"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const room = "NAX-CHAT";
+const messagesRef = collection(db, "rooms", room, "messages");
+
+let username = localStorage.getItem("nax_name") || "";
+
+function ensureName() {
+  if (!username) {
+    username = prompt("Chat name (1-16 chars):", "Guest") || "Guest";
+    username = username.replace(/[^\w\- ]/g, "").slice(0, 16);
+    localStorage.setItem("nax_name", username);
+  }
+}
+
+function addLine(text) {
+  const p = document.createElement("p");
+  p.textContent = text;
+  chatLog.appendChild(p);
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
+
+/* LIVE UPDATES */
+const q = query(messagesRef, orderBy("ts", "asc"));
+onSnapshot(q, snap => {
+  chatLog.innerHTML = "";
+  snap.forEach(doc => {
+    const m = doc.data();
+    addLine(`${m.name}: ${m.text}`);
+  });
+});
+
+window.sendMsg = async function () {
+  const text = chatInput.value.trim();
+  if (!text) return;
+  ensureName();
+  await addDoc(messagesRef, {
+    name: username,
+    text,
+    ts: serverTimestamp()
+  });
+  chatInput.value = "";
+};
+
+chatInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") sendMsg();
+});
+
+/* HOTKEY */
+document.addEventListener("keydown", e => {
+  if (e.altKey && e.code === "F1") {
+    secretOverlay.classList.add("active");
+    ensureName();
+    setTimeout(() => chatInput.focus(), 50);
+  }
+  if (e.code === "Escape") {
+    secretOverlay.classList.remove("active");
+  }
+});
+</script>
+
 <script>
-/* MUSIC */
+/* VERIFY + MUSIC */
 const music = document.getElementById("bgMusic");
 music.volume = 0.3;
 
 function toggleMusic() {
-    if (music.paused) music.play();
-    else music.pause();
-}
-
-function setVolume(v) {
-    music.volume = v;
-}
-
-/* BOT VERIFY */
-if (localStorage.getItem("nax_verified")) {
-    document.getElementById("verifyOverlay").style.display = "none";
+  music.paused ? music.play() : music.pause();
 }
 
 function verify() {
-    if (verifyInput.value.trim() === "7") {
-        localStorage.setItem("nax_verified", "1");
-        document.getElementById("verifyOverlay").style.display = "none";
-        music.play(); // start music after verify
-    } else {
-        verifyMsg.textContent = "Wrong answer.";
-    }
+  if (verifyInput.value === "7") {
+    localStorage.setItem("nax_verified", "1");
+    verifyOverlay.style.display = "none";
+    music.play();
+  } else verifyMsg.textContent = "Wrong.";
 }
 
-/* SPLASH */
-const splashes = [
-    "Now in beta!",
-    "Classic vibes!",
-    "100% offline!",
-    "Open source!",
-    "Java powered!",
-    "Creeper approved!",
-    "Old-school fun!",
-    "Survival ready!",
-    "Hello world!",
-    "ADMIN!",
-    "DOWNLOAD NOW!"
-];
+if (localStorage.getItem("nax_verified"))
+  verifyOverlay.style.display = "none";
 
-document.getElementById("splashText").textContent =
-    splashes[Math.floor(Math.random() * splashes.length)];
+/* SPLASH */
+const splashes = ["ADMIN MODE", "SECRET READY", "ALT + F1"];
+splashText.textContent = splashes[Math.floor(Math.random() * splashes.length)];
 </script>
 
 </body>
