@@ -93,26 +93,6 @@ h1 {
     to   { transform: scale(1.12); }
 }
 
-/* MUSIC CONTROLS (REMOVED UI, leaving styles unused is OK) */
-.music-controls {
-    margin-top: 10px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.music-controls button {
-    font-family: Minecraft, monospace;
-    padding: 6px 10px;
-    background: #55aa55;
-    border: none;
-    cursor: pointer;
-}
-
-.music-controls input {
-    width: 100px;
-}
-
 /* LAYOUT */
 .content-row {
     display: flex;
@@ -187,7 +167,6 @@ img.hero {
     pointer-events: auto;
 }
 
-/* header bar like you want */
 .secret-header {
     height: 52px;
     background: #0b0b0b;
@@ -205,7 +184,6 @@ img.hero {
     letter-spacing: 1px;
 }
 
-/* close button (works even when iframe has focus) */
 .secret-close {
     position: absolute;
     right: 12px;
@@ -223,16 +201,14 @@ img.hero {
 }
 .secret-close:hover { background: #220000; }
 
-/* chat area takes the rest of screen */
 .secret-chat {
     flex: 1;
     min-height: 0;
     overflow: hidden;
     background: #000;
-    padding: 0;
 }
 
-/* make whatever Chatango injects fill the area */
+/* Force the injected chat iframe/object/embed to fill */
 .secret-chat iframe,
 .secret-chat object,
 .secret-chat embed {
@@ -246,7 +222,7 @@ img.hero {
 
 <body>
 
-<!-- AUDIO (kept, but UI removed) -->
+<!-- AUDIO (kept, but NO play/pause/volume UI anywhere) -->
 <audio id="bgMusic" loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
@@ -270,7 +246,6 @@ img.hero {
     </div>
 
     <div class="secret-chat" id="secretChatMount">
-        <!-- Chatango embed (we will force it fullscreen via JS after it injects) -->
         <script id="cid0020000429253934881"
                 data-cfasync="false"
                 async
@@ -290,8 +265,7 @@ img.hero {
             <div class="splash" id="splashText"></div>
         </div>
 
-        <!-- MUSIC CONTROLS REMOVED (Play/Pause + Volume removed) -->
-        <!-- <div class="music-controls"> ... removed ... </div> -->
+        <!-- ✅ PLAY/PAUSE/VOLUME REMOVED (this block is gone) -->
 
         <div class="content-row">
             <div class="left">
@@ -302,14 +276,11 @@ img.hero {
                     classic, alpha, beta, and modern versions of Minecraft.
                 </p>
 
-                <!-- DOWNLOAD BUTTON REMOVED -->
-                <!--
                 <a class="download"
                    href="https://github.com/bb7716546/NAX-LAUNCHER/releases/download/v1.0.0/NAX_LAUNCHER.exe"
                    target="_blank">
                     Download NAX_LAUNCHER.exe
                 </a>
-                -->
 
                 <p class="small">
                     Windows 10 / 11 • No Microsoft login required
@@ -344,7 +315,7 @@ img.hero {
 </div>
 
 <script>
-/* MUSIC (still auto-starts after verify, but no UI) */
+/* MUSIC (no UI, but starts after verify) */
 const music = document.getElementById("bgMusic");
 music.volume = 0.3;
 
@@ -357,7 +328,6 @@ function verify() {
     if (verifyInput.value.trim() === "7") {
         localStorage.setItem("nax_verified", "1");
         document.getElementById("verifyOverlay").style.display = "none";
-        // try to start music (browser may block until user interaction, but verify click counts)
         music.play().catch(()=>{});
     } else {
         verifyMsg.textContent = "Wrong answer.";
@@ -389,7 +359,9 @@ const secretChatMount = document.getElementById("secretChatMount");
 
 function openSecret() {
     secretOverlay.classList.add("active");
-    // Force Chatango injected iframe/object to fill screen (mutation observer)
+    // help ensure ESC works immediately after opening
+    secretOverlay.setAttribute("tabindex", "-1");
+    secretOverlay.focus({ preventScroll: true });
     forceChatFullscreen();
 }
 
@@ -397,46 +369,38 @@ function closeSecret() {
     secretOverlay.classList.remove("active");
 }
 
-document.addEventListener("keydown", (e) => {
-    // ALT + F1 opens
+/* ✅ ALT + F1 to open  |  ✅ ESC to close */
+window.addEventListener("keydown", (e) => {
     if (e.altKey && (e.code === "F1" || e.key === "F1")) {
         e.preventDefault();
         openSecret();
     }
-    // ESC closes (works when page has focus; if iframe has focus use the X)
     if (e.key === "Escape") {
         closeSecret();
     }
 }, true);
 
+/* Guaranteed close */
 secretCloseBtn.addEventListener("click", closeSecret);
 
-// Click outside chat to close (black area)
+/* Click black background to close */
 secretOverlay.addEventListener("click", (e) => {
     if (e.target === secretOverlay) closeSecret();
 });
 
-/* Fix Chatango sizing: watch for injected iframe and resize it */
+/* Force injected chat element to fill */
 function forceChatFullscreen() {
-    // Try immediately
     resizeInjected();
-
-    // Watch for changes (Chatango injects after script loads)
-    const obs = new MutationObserver(() => resizeInjected());
+    const obs = new MutationObserver(resizeInjected);
     obs.observe(secretChatMount, { childList: true, subtree: true });
-
-    // Stop observing after a few seconds (prevents running forever)
     setTimeout(() => obs.disconnect(), 8000);
 }
-
 function resizeInjected() {
     const el =
         secretChatMount.querySelector("iframe") ||
         secretChatMount.querySelector("object") ||
         secretChatMount.querySelector("embed");
-
     if (!el) return;
-
     el.style.width = "100%";
     el.style.height = "100%";
     el.style.border = "0";
