@@ -18,7 +18,7 @@ body {
     color: #e0e0e0;
 }
 
-/* ================= BOT VERIFY ================= */
+/* BOT VERIFY */
 #verifyOverlay {
     position: fixed;
     inset: 0;
@@ -53,7 +53,7 @@ body {
     cursor: pointer;
 }
 
-/* ================= SITE ================= */
+/* SITE */
 .wrapper {
     max-width: 1100px;
     margin: 40px auto;
@@ -84,6 +84,7 @@ h1 {
     font-size: 18px;
     color: #FFD83D;
     text-shadow: 2px 2px #000, 3px 3px #000;
+    white-space: nowrap;
     animation: splashZoom 1.2s infinite alternate ease-in-out;
 }
 
@@ -173,8 +174,6 @@ img.hero {
     position: fixed;
     inset: 0;
     background: #000;
-    color: #ff3333;
-    font-family: Minecraft, monospace;
     display: flex;
     flex-direction: column;
     opacity: 0;
@@ -193,52 +192,24 @@ img.hero {
     border-bottom: 2px solid #300;
     text-align: center;
     font-size: 22px;
-}
-
-.secret-chat {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-}
-
-.secret-input {
-    border-top: 2px solid #300;
-    padding: 10px;
-    display: flex;
-    gap: 10px;
-}
-
-.secret-input input {
-    flex: 1;
-    background: #111;
     color: #ff3333;
-    border: 1px solid #400;
-    padding: 8px;
-    font-family: Minecraft, monospace;
-}
-
-.secret-input button {
-    background: #400;
-    color: #ff3333;
-    border: none;
-    padding: 8px 14px;
-    cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
+<!-- AUDIO -->
 <audio id="bgMusic" loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- VERIFY -->
+<!-- BOT VERIFY -->
 <div id="verifyOverlay">
   <div class="verify-box">
     <h3>Verify you are human</h3>
     <p>What is <b>3 + 4</b>?</p>
-    <input id="verifyInput">
+    <input id="verifyInput" placeholder="Answer">
     <button onclick="verify()">Enter Site</button>
     <p id="verifyMsg"></p>
   </div>
@@ -247,10 +218,15 @@ img.hero {
 <!-- SECRET CHAT -->
 <div id="secretOverlay">
     <div class="secret-header">NAX-CHAT</div>
-    <div class="secret-chat" id="chatLog"></div>
-    <div class="secret-input">
-        <input id="chatInput" placeholder="Type message...">
-        <button onclick="sendMsg()">SEND</button>
+
+    <div style="flex:1; display:flex; justify-content:center; align-items:center;">
+        <script id="cid0020000429253934881"
+                data-cfasync="false"
+                async
+                src="//st.chatango.com/js/gz/emb.js"
+                style="width:90%; height:90%;">
+{"handle":"nax-chat","arch":"js","styles":{"a":"CC0000","b":100,"c":"FFFFFF","d":"FFFFFF","k":"CC0000","l":"CC0000","m":"CC0000","n":"FFFFFF","p":"10","q":"CC0000","r":100,"fwtickm":1}}
+        </script>
     </div>
 </div>
 
@@ -263,7 +239,7 @@ img.hero {
         </div>
 
         <div class="music-controls">
-            <button id="musicBtn">Play / Pause</button>
+            <button onclick="toggleMusic()">Play / Pause</button>
             <label>Volume</label>
             <input type="range" min="0" max="1" step="0.01"
                    value="0.3" oninput="setVolume(this.value)">
@@ -271,7 +247,8 @@ img.hero {
 
         <div class="content-row">
             <div class="left">
-                <img src="nax.png" class="hero">
+                <img src="nax.png" alt="NAX Launcher" class="hero">
+
                 <p>
                     NAX Launcher is a Minecraft launcher focused on
                     classic, alpha, beta, and modern versions of Minecraft.
@@ -315,122 +292,49 @@ img.hero {
 
 </div>
 
-<!-- ================= FIREBASE CHAT ================= -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import {
-  getFirestore, collection, addDoc, query,
-  orderBy, onSnapshot, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-/* 🔴 PASTE YOUR FIREBASE CONFIG HERE 🔴 */
-const firebaseConfig = {
-  apiKey: "PASTE",
-  authDomain: "PASTE",
-  projectId: "PASTE",
-  storageBucket: "PASTE",
-  messagingSenderId: "PASTE",
-  appId: "PASTE"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const messagesRef = collection(db, "rooms", "NAX-CHAT", "messages");
-
-let username = localStorage.getItem("nax_name") || "";
-
-function ensureName() {
-  if (!username) {
-    username = prompt("Chat name:", "Guest") || "Guest";
-    username = username.replace(/[^\w\- ]/g, "").slice(0, 16);
-    localStorage.setItem("nax_name", username);
-  }
-}
-
-function addLine(text) {
-  const p = document.createElement("p");
-  p.textContent = text;
-  chatLog.appendChild(p);
-  chatLog.scrollTop = chatLog.scrollHeight;
-}
-
-const q = query(messagesRef, orderBy("ts", "asc"));
-onSnapshot(q, snap => {
-  chatLog.innerHTML = "";
-  snap.forEach(doc => {
-    const m = doc.data();
-    addLine(`${m.name}: ${m.text}`);
-  });
-});
-
-window.sendMsg = async function () {
-  const text = chatInput.value.trim();
-  if (!text) return;
-  ensureName();
-  await addDoc(messagesRef, {
-    name: username,
-    text,
-    ts: serverTimestamp()
-  });
-  chatInput.value = "";
-};
-</script>
-
 <script>
-/* MUSIC + VERIFY */
+/* MUSIC */
 const music = document.getElementById("bgMusic");
 music.volume = 0.3;
 
-function setVolume(v){ music.volume = v; }
-function toggleMusic(){ music.paused ? music.play() : music.pause(); }
+function toggleMusic() {
+    music.paused ? music.play() : music.pause();
+}
+function setVolume(v) { music.volume = v; }
 
-if(localStorage.getItem("nax_verified"))
-    verifyOverlay.style.display="none";
-
-function verify(){
-    if(verifyInput.value==="7"){
-        localStorage.setItem("nax_verified","1");
-        verifyOverlay.style.display="none";
+/* VERIFY */
+if (localStorage.getItem("nax_verified")) {
+    verifyOverlay.style.display = "none";
+}
+function verify() {
+    if (verifyInput.value.trim() === "7") {
+        localStorage.setItem("nax_verified", "1");
+        verifyOverlay.style.display = "none";
         music.play();
-    } else verifyMsg.textContent="Wrong.";
+    } else {
+        verifyMsg.textContent = "Wrong answer.";
+    }
 }
 
 /* SPLASH */
-const splashes=[
- "Now in beta!",
- "Classic vibes!",
- "100% offline!",
- "ADMIN!",
- "ALT+F1 disabled 😈"
+const splashes = [
+    "Now in beta!",
+    "Classic vibes!",
+    "100% offline!",
+    "Open source!",
+    "ADMIN!",
+    "ALT + F1 👀"
 ];
-splashText.textContent=splashes[Math.floor(Math.random()*splashes.length)];
+splashText.textContent =
+    splashes[Math.floor(Math.random() * splashes.length)];
 
-/* SECRET UNLOCK */
-const btn=document.getElementById("musicBtn");
-let clicks=0, timer=null;
-
-btn.onclick=()=>{
-    toggleMusic();
-    clicks++;
-
-    if(clicks===10){
-        timer=setTimeout(()=>{
-            secretOverlay.classList.add("active");
-            setTimeout(()=>chatInput.focus(),100);
-        },5000);
+/* SECRET KEY */
+document.addEventListener("keydown", e => {
+    if (e.altKey && e.code === "F1") {
+        secretOverlay.classList.add("active");
     }
-
-    if(clicks>10){
-        clicks=0;
-        clearTimeout(timer);
-    }
-};
-
-document.addEventListener("keydown",e=>{
-    if(e.key==="Escape"){
+    if (e.code === "Escape") {
         secretOverlay.classList.remove("active");
-        clicks=0;
-        clearTimeout(timer);
     }
 });
 </script>
