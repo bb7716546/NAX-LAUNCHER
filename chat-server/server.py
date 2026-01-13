@@ -1,111 +1,51 @@
-from fastapi import FastAPI, WebSocket, HTTPException
+from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import sqlite3, json, random
 
 app = FastAPI()
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"]
-)
+db = sqlite3.connect("data.db", check_same_thread=False)
 
-# ---------- DATABASES ----------
-users = sqlite3.connect("users.db", check_same_thread=False)
-forums = sqlite3.connect("forums.db", check_same_thread=False)
+db.execute("CREATE TABLE IF NOT EXISTS users (name TEXT PRIMARY KEY, role TEXT)")
+db.execute("CREATE TABLE IF NOT EXISTS threads (id INTEGER PRIMARY KEY, title TEXT, author TEXT)")
+db.commit()
 
-users.execute("""
-CREATE TABLE IF NOT EXISTS users (
-    email TEXT PRIMARY KEY,
-    role TEXT
-)
-""")
-
-forums.execute("""
-CREATE TABLE IF NOT EXISTS threads (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT,
-    author TEXT
-)
-""")
-
-forums.execute("""
-CREATE TABLE IF NOT EXISTS replies (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    thread_id INTEGER,
-    author TEXT,
-    text TEXT
-)
-""")
-
-# ---------- ROLES ----------
-ROLE_COLORS = {
-    "admin": "#ff5555",
-    "mod": "#55ffff",
-    "user": "#55ff55"
-}
-
-def get_role(email):
-    row = users.execute("SELECT role FROM users WHERE email=?", (email,)).fetchone()
-    return row[0] if row else "user"
-
-# ---------- CHAT ----------
-clients = []
+ROLE_COLORS = {"admin":"#ff5555","mod":"#55ffff","user":"#55ff55"}
 
 @app.websocket("/chat")
 async def chat(ws: WebSocket):
     await ws.accept()
+    name = f"NAX{random.randint(1000,9999)}"
+    role = "user"
+    color = ROLE_COLORS[role]
 
-    email = f"user{random.randint(1000,9999)}@nax"
-    role = get_role(email)
-    color = ROLE_COLORS.get(role, "#ffffff")
+    while True:
+        text = await ws.receive_text()
 
-    client = {"ws": ws, "email": email, "role": role, "color": color}
-    clients.append(client)
+        if text.startswith("/"):
+            cmd = text.split()
+            if cmd[0] == "/role" and len(cmd) == 3:
+                db.execute("INSERT OR REPLACE INTO users VALUES (?,?)",(cmd[1],cmd[2]))
+                db.commit()
+                continue
 
-    try:
-        while True:
-            text = await ws.receive_text()
-            packet = json.dumps({
-                "user": email.split("@")[0],
-                "role": role.upper(),
-                "color": color,
-                "text": text
-            })
-            for c in clients:
-                await c["ws"].send_text(packet)
-    except:
-        clients.remove(client)
+        msg = json.dumps({"user":name,"role":role,"color":color,"text":text})
+        await ws.send_text(msg)
 
-# ---------- FORUMS ----------
 @app.get("/forums")
-def list_threads():
-    rows = forums.execute("SELECT id, title, author FROM threads").fetchall()
-    return [{"id": i, "title": t, "author": a} for i, t, a in rows]
+def forums():
+    rows = db.execute("SELECT title, author FROM threads").fetchall()
+    return [{"title":t,"author":a} for t,a in rows]
 
 @app.post("/forums/thread")
-def new_thread(data: dict):
-    forums.execute(
-        "INSERT INTO threads (title, author) VALUES (?,?)",
-        (data["title"], data["author"])
-    )
-    forums.commit()
-    return {"ok": True}
+def new_thread(data:dict):
+    db.execute("INSERT INTO threads (title,author) VALUES (?,?)",(data["title"],"Guest"))
+    db.commit()
+    return {"ok":True}
 
-@app.get("/forums/{thread_id}")
-def get_replies(thread_id: int):
-    rows = forums.execute(
-        "SELECT author, text FROM replies WHERE thread_id=?",
-        (thread_id,)
-    ).fetchall()
-    return [{"author": a, "text": t} for a, t in rows]
-
-@app.post("/forums/reply")
-def reply(data: dict):
-    forums.execute(
-        "INSERT INTO replies (thread_id, author, text) VALUES (?,?,?)",
-        (data["thread_id"], data["author"], data["text"])
-    )
-    forums.commit()
-    return {"ok": True}
+@app.post("/admin/role")
+def role(data:dict):
+    db.execute("INSERT OR REPLACE INTO users VALUES (?,?)",(data["user"],data["role"]))
+    db.commit()
+    return {"ok":True}
