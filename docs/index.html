@@ -158,7 +158,7 @@ img.hero {
     flex-direction: column;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.45s ease;
+    transition: opacity 0.4s ease;
     z-index: 10000;
 }
 
@@ -168,7 +168,7 @@ img.hero {
 }
 
 .secret-header {
-    height: 52px;
+    height: 50px;
     background: #0b0b0b;
     border-bottom: 2px solid #550000;
     display: flex;
@@ -179,36 +179,34 @@ img.hero {
 }
 
 .secret-title {
-    color: #ff2b2b;
+    color: #ff3333;
     font-size: 22px;
-    letter-spacing: 1px;
 }
 
 .secret-close {
     position: absolute;
     right: 12px;
-    top: 10px;
+    top: 9px;
     height: 32px;
     width: 32px;
-    display: grid;
-    place-items: center;
-    color: #ff2b2b;
     background: transparent;
+    color: #ff3333;
     border: 2px solid #550000;
     cursor: pointer;
     font-family: Minecraft, monospace;
-    line-height: 1;
 }
-.secret-close:hover { background: #220000; }
+
+.secret-close:hover {
+    background: #220000;
+}
 
 .secret-chat {
     flex: 1;
     min-height: 0;
     overflow: hidden;
-    background: #000;
 }
 
-/* Force the injected chat iframe/object/embed to fill */
+/* FORCE CHATANGO TO FILL SPACE */
 .secret-chat iframe,
 .secret-chat object,
 .secret-chat embed {
@@ -222,17 +220,12 @@ img.hero {
 
 <body>
 
-<!-- AUDIO (kept, but NO play/pause/volume UI anywhere) -->
-<audio id="bgMusic" loop>
-    <source src="music.mp3" type="audio/mpeg">
-</audio>
-
 <!-- BOT VERIFY -->
 <div id="verifyOverlay">
   <div class="verify-box">
     <h3>Verify you are human</h3>
     <p>What is <b>3 + 4</b>?</p>
-    <input id="verifyInput" placeholder="Answer">
+    <input id="verifyInput">
     <button onclick="verify()">Enter Site</button>
     <p id="verifyMsg"></p>
   </div>
@@ -242,15 +235,14 @@ img.hero {
 <div id="secretOverlay">
     <div class="secret-header">
         <div class="secret-title">NAX-CHAT</div>
-        <button class="secret-close" id="secretCloseBtn" title="Close">X</button>
+        <button class="secret-close" onclick="closeSecret()">X</button>
     </div>
 
     <div class="secret-chat" id="secretChatMount">
         <script id="cid0020000429253934881"
                 data-cfasync="false"
                 async
-                src="//st.chatango.com/js/gz/emb.js"
-                style="width:100%;height:100%;">
+                src="//st.chatango.com/js/gz/emb.js">
 {"handle":"nax-chat","arch":"js","styles":{"a":"CC0000","b":100,"c":"FFFFFF","d":"FFFFFF","k":"CC0000","l":"CC0000","m":"CC0000","n":"FFFFFF","p":"10","q":"CC0000","r":100,"fwtickm":1}}
         </script>
     </div>
@@ -259,13 +251,10 @@ img.hero {
 <div class="wrapper">
 
     <div class="panel">
-
         <div class="title-row">
             <h1>NAX Launcher</h1>
             <div class="splash" id="splashText"></div>
         </div>
-
-        <!-- ✅ PLAY/PAUSE/VOLUME REMOVED (this block is gone) -->
 
         <div class="content-row">
             <div class="left">
@@ -315,20 +304,15 @@ img.hero {
 </div>
 
 <script>
-/* MUSIC (no UI, but starts after verify) */
-const music = document.getElementById("bgMusic");
-music.volume = 0.3;
-
-/* BOT VERIFY */
+/* VERIFY */
 if (localStorage.getItem("nax_verified")) {
-    document.getElementById("verifyOverlay").style.display = "none";
+    verifyOverlay.style.display = "none";
 }
 
 function verify() {
     if (verifyInput.value.trim() === "7") {
         localStorage.setItem("nax_verified", "1");
-        document.getElementById("verifyOverlay").style.display = "none";
-        music.play().catch(()=>{});
+        verifyOverlay.style.display = "none";
     } else {
         verifyMsg.textContent = "Wrong answer.";
     }
@@ -339,39 +323,27 @@ const splashes = [
     "Now in beta!",
     "Classic vibes!",
     "100% offline!",
-    "Open source!",
-    "Java powered!",
-    "Creeper approved!",
-    "Old-school fun!",
-    "Survival ready!",
-    "Hello world!",
     "ADMIN!",
-    "DOWNLOAD NOW!"
+    "ALT + F1 👀"
 ];
-
-document.getElementById("splashText").textContent =
+splashText.textContent =
     splashes[Math.floor(Math.random() * splashes.length)];
 
-/* SECRET OPEN/CLOSE */
+/* SECRET CHAT CONTROLS */
 const secretOverlay = document.getElementById("secretOverlay");
-const secretCloseBtn = document.getElementById("secretCloseBtn");
-const secretChatMount = document.getElementById("secretChatMount");
 
 function openSecret() {
     secretOverlay.classList.add("active");
-    // help ensure ESC works immediately after opening
     secretOverlay.setAttribute("tabindex", "-1");
-    secretOverlay.focus({ preventScroll: true });
-    forceChatFullscreen();
+    secretOverlay.focus();
 }
 
 function closeSecret() {
     secretOverlay.classList.remove("active");
 }
 
-/* ✅ ALT + F1 to open  |  ✅ ESC to close */
-window.addEventListener("keydown", (e) => {
-    if (e.altKey && (e.code === "F1" || e.key === "F1")) {
+window.addEventListener("keydown", e => {
+    if (e.altKey && e.key === "F1") {
         e.preventDefault();
         openSecret();
     }
@@ -379,33 +351,6 @@ window.addEventListener("keydown", (e) => {
         closeSecret();
     }
 }, true);
-
-/* Guaranteed close */
-secretCloseBtn.addEventListener("click", closeSecret);
-
-/* Click black background to close */
-secretOverlay.addEventListener("click", (e) => {
-    if (e.target === secretOverlay) closeSecret();
-});
-
-/* Force injected chat element to fill */
-function forceChatFullscreen() {
-    resizeInjected();
-    const obs = new MutationObserver(resizeInjected);
-    obs.observe(secretChatMount, { childList: true, subtree: true });
-    setTimeout(() => obs.disconnect(), 8000);
-}
-function resizeInjected() {
-    const el =
-        secretChatMount.querySelector("iframe") ||
-        secretChatMount.querySelector("object") ||
-        secretChatMount.querySelector("embed");
-    if (!el) return;
-    el.style.width = "100%";
-    el.style.height = "100%";
-    el.style.border = "0";
-    el.style.display = "block";
-}
 </script>
 
 </body>
