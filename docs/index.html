@@ -202,18 +202,23 @@ img.hero {
 
 .secret-chat {
     flex: 1;
-    min-height: 0;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
-/* FORCE CHATANGO TO FILL SPACE */
-.secret-chat iframe,
-.secret-chat object,
-.secret-chat embed {
-    width: 100% !important;
-    height: 100% !important;
-    border: 0 !important;
-    display: block !important;
+#chatMessages {
+    flex: 1;
+    overflow-y: auto;
+    background: #000;
+    padding: 8px;
+}
+
+#chatInput {
+    padding: 6px;
+    font-family: Minecraft, monospace;
+    background: #111;
+    color: #fff;
+    border: 0;
 }
 </style>
 </head>
@@ -238,13 +243,9 @@ img.hero {
         <button class="secret-close" onclick="closeSecret()">X</button>
     </div>
 
-    <div class="secret-chat" id="secretChatMount">
-        <script id="cid0020000429253934881"
-                data-cfasync="false"
-                async
-                src="//st.chatango.com/js/gz/emb.js">
-{"handle":"nax-chat","arch":"js","styles":{"a":"CC0000","b":100,"c":"FFFFFF","d":"FFFFFF","k":"CC0000","l":"CC0000","m":"CC0000","n":"FFFFFF","p":"10","q":"CC0000","r":100,"fwtickm":1}}
-        </script>
+    <div class="secret-chat">
+        <div id="chatMessages"></div>
+        <input id="chatInput" placeholder="Type message...">
     </div>
 </div>
 
@@ -331,19 +332,48 @@ const splashes = [
 splashText.textContent =
     splashes[Math.floor(Math.random() * splashes.length)];
 
-/* SECRET CHAT CONTROLS */
+/* SECRET CHAT */
 const secretOverlay = document.getElementById("secretOverlay");
+const chatMessages = document.getElementById("chatMessages");
+const chatInput = document.getElementById("chatInput");
+
+let ws = null;
+const CHAT_SERVER = "wss://YOUR_SERVER/chat"; // CHANGE THIS
 
 function openSecret() {
     secretOverlay.classList.add("active");
-    secretOverlay.setAttribute("tabindex", "-1");
-    secretOverlay.focus();
+    if (!ws) connectChat();
 }
 
 function closeSecret() {
     secretOverlay.classList.remove("active");
 }
 
+function connectChat() {
+    ws = new WebSocket(CHAT_SERVER);
+
+    ws.onmessage = e => {
+        const msg = JSON.parse(e.data);
+        const line = document.createElement("div");
+        line.innerHTML =
+            `<span style="color:${msg.color}">${msg.user}</span>: ${msg.text}`;
+        chatMessages.appendChild(line);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    };
+
+    ws.onclose = () => {
+        ws = null;
+    };
+}
+
+chatInput.addEventListener("keydown", e => {
+    if (e.key === "Enter" && ws) {
+        ws.send(chatInput.value);
+        chatInput.value = "";
+    }
+});
+
+/* HOTKEYS */
 window.addEventListener("keydown", e => {
     if (e.altKey && e.key === "F1") {
         e.preventDefault();
