@@ -84,7 +84,6 @@ h1 {
     font-size: 18px;
     color: #FFD83D;
     text-shadow: 2px 2px #000, 3px 3px #000;
-    white-space: nowrap;
     animation: splashZoom 1.2s infinite alternate ease-in-out;
 }
 
@@ -178,7 +177,7 @@ img.hero {
     flex-direction: column;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.6s ease;
+    transition: opacity 0.4s ease;
     z-index: 10000;
 }
 
@@ -187,19 +186,35 @@ img.hero {
     pointer-events: auto;
 }
 
+/* FULL WIDTH RED HEADER */
 .secret-header {
-    padding: 15px;
-    border-bottom: 2px solid #300;
-    text-align: center;
-    font-size: 22px;
+    height: 50px;
+    background: #8b0000;
     color: #ff3333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    border-bottom: 2px solid #400;
+    flex-shrink: 0;
+}
+
+/* CHAT FULLSCREEN AREA */
+.secret-chat {
+    flex: 1;
+    position: relative;
+}
+
+/* FORCE CHATANGO TO FILL */
+.secret-chat script {
+    width: 100% !important;
+    height: 100% !important;
 }
 </style>
 </head>
 
 <body>
 
-<!-- AUDIO -->
 <audio id="bgMusic" loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
@@ -209,7 +224,7 @@ img.hero {
   <div class="verify-box">
     <h3>Verify you are human</h3>
     <p>What is <b>3 + 4</b>?</p>
-    <input id="verifyInput" placeholder="Answer">
+    <input id="verifyInput">
     <button onclick="verify()">Enter Site</button>
     <p id="verifyMsg"></p>
   </div>
@@ -219,12 +234,12 @@ img.hero {
 <div id="secretOverlay">
     <div class="secret-header">NAX-CHAT</div>
 
-    <div style="flex:1; display:flex; justify-content:center; align-items:center;">
+    <div class="secret-chat">
         <script id="cid0020000429253934881"
                 data-cfasync="false"
                 async
                 src="//st.chatango.com/js/gz/emb.js"
-                style="width:90%; height:90%;">
+                style="width:100%; height:100%;">
 {"handle":"nax-chat","arch":"js","styles":{"a":"CC0000","b":100,"c":"FFFFFF","d":"FFFFFF","k":"CC0000","l":"CC0000","m":"CC0000","n":"FFFFFF","p":"10","q":"CC0000","r":100,"fwtickm":1}}
         </script>
     </div>
@@ -247,93 +262,54 @@ img.hero {
 
         <div class="content-row">
             <div class="left">
-                <img src="nax.png" alt="NAX Launcher" class="hero">
-
-                <p>
-                    NAX Launcher is a Minecraft launcher focused on
-                    classic, alpha, beta, and modern versions of Minecraft.
-                </p>
-
-                <a class="download"
-                   href="https://github.com/bb7716546/NAX-LAUNCHER/releases/download/v1.0.0/NAX_LAUNCHER.exe"
-                   target="_blank">
-                    Download NAX_LAUNCHER.exe
-                </a>
-
-                <p class="small">
-                    Windows 10 / 11 • No Microsoft login required
-                </p>
+                <img src="nax.png" class="hero">
+                <p>NAX Launcher is a Minecraft launcher focused on classic versions.</p>
             </div>
-
             <div class="right">
-                <iframe
-                    src="https://www.youtube.com/embed/qBI7LNkMXEE"
-                    allowfullscreen>
-                </iframe>
+                <iframe src="https://www.youtube.com/embed/qBI7LNkMXEE" allowfullscreen></iframe>
             </div>
         </div>
     </div>
 
-    <div class="panel">
-        <h2>Features</h2>
-        <ul>
-            <li>Classic / Alpha / Beta / Release / Snapshot support</li>
-            <li>Installed versions list</li>
-            <li>Automatic Java version selection</li>
-            <li>Offline mode</li>
-            <li>RAM selector</li>
-            <li>Crash reporting</li>
-        </ul>
-    </div>
-
-    <div class="footer">
-        NAX Launcher • Made by bb771
-    </div>
-
+    <div class="footer">NAX Launcher • Made by bb771</div>
 </div>
 
 <script>
 /* MUSIC */
 const music = document.getElementById("bgMusic");
 music.volume = 0.3;
-
-function toggleMusic() {
-    music.paused ? music.play() : music.pause();
-}
-function setVolume(v) { music.volume = v; }
+function toggleMusic(){ music.paused ? music.play() : music.pause(); }
+function setVolume(v){ music.volume = v; }
 
 /* VERIFY */
-if (localStorage.getItem("nax_verified")) {
-    verifyOverlay.style.display = "none";
-}
-function verify() {
-    if (verifyInput.value.trim() === "7") {
-        localStorage.setItem("nax_verified", "1");
-        verifyOverlay.style.display = "none";
-        music.play();
-    } else {
-        verifyMsg.textContent = "Wrong answer.";
-    }
+if(localStorage.getItem("nax_verified")) verifyOverlay.style.display="none";
+function verify(){
+  if(verifyInput.value==="7"){
+    localStorage.setItem("nax_verified","1");
+    verifyOverlay.style.display="none";
+    music.play();
+  } else verifyMsg.textContent="Wrong answer.";
 }
 
 /* SPLASH */
-const splashes = [
-    "Now in beta!",
-    "Classic vibes!",
-    "100% offline!",
-    "Open source!",
-    "ADMIN!",
-    "ALT + F1 👀"
-];
-splashText.textContent =
-    splashes[Math.floor(Math.random() * splashes.length)];
+const splashes=["Now in beta!","Classic vibes!","ADMIN!","ALT + F1 👀"];
+splashText.textContent=splashes[Math.floor(Math.random()*splashes.length)];
 
-/* SECRET KEY */
+/* 🔑 SECRET KEY — ESC FIXED */
 document.addEventListener("keydown", e => {
-    if (e.altKey && e.code === "F1") {
+    if (e.altKey && e.key === "F1") {
+        e.preventDefault();
         secretOverlay.classList.add("active");
     }
-    if (e.code === "Escape") {
+
+    if (e.key === "Escape") {
+        secretOverlay.classList.remove("active");
+    }
+});
+
+/* ALSO CLICK BACKGROUND TO CLOSE */
+secretOverlay.addEventListener("click", e => {
+    if (e.target === secretOverlay) {
         secretOverlay.classList.remove("active");
     }
 });
