@@ -37,23 +37,7 @@ body {
     max-width: 300px;
 }
 
-.verify-box input {
-    width: 100%;
-    margin: 8px 0;
-    padding: 6px;
-    font-family: Minecraft, monospace;
-}
-
-.verify-box button {
-    margin-top: 10px;
-    padding: 8px 14px;
-    font-family: Minecraft, monospace;
-    background: #55aa55;
-    border: none;
-    cursor: pointer;
-}
-
-/* SITE */
+/* PANELS */
 .wrapper {
     max-width: 1100px;
     margin: 40px auto;
@@ -67,89 +51,7 @@ body {
     margin-bottom: 20px;
 }
 
-.title-row {
-    display: flex;
-    align-items: center;
-    gap: 28px;
-}
-
-h1 {
-    margin: 0;
-    font-size: 30px;
-    color: #7CFF7C;
-}
-
-/* SPLASH */
-.splash {
-    font-size: 18px;
-    color: #FFD83D;
-    text-shadow: 2px 2px #000, 3px 3px #000;
-    white-space: nowrap;
-    animation: splashZoom 1.2s infinite alternate ease-in-out;
-}
-
-@keyframes splashZoom {
-    from { transform: scale(1); }
-    to   { transform: scale(1.12); }
-}
-
-/* LAYOUT */
-.content-row {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
-
-.left, .right {
-    flex: 1;
-    min-width: 300px;
-}
-
-iframe {
-    width: 100%;
-    height: 260px;
-    border: 2px solid #111;
-    background: #000;
-}
-
-img.hero {
-    width: 100%;
-    max-height: 260px;
-    object-fit: contain;
-    display: block;
-    margin: 15px auto;
-    background: #000;
-    border: 2px solid #111;
-}
-
-.download {
-    display: inline-block;
-    margin-top: 12px;
-    padding: 12px 20px;
-    background: #55aa55;
-    color: #000;
-    font-weight: bold;
-    text-decoration: none;
-    border: 2px solid #2e7d32;
-}
-
-.download:hover {
-    background: #66cc66;
-}
-
-.small {
-    font-size: 13px;
-    opacity: 0.85;
-}
-
-.footer {
-    text-align: center;
-    font-size: 12px;
-    opacity: 0.6;
-    margin-top: 25px;
-}
-
-/* ================= SECRET CHAT ================= */
+/* CHAT */
 #secretOverlay {
     position: fixed;
     inset: 0;
@@ -158,231 +60,161 @@ img.hero {
     flex-direction: column;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.3s;
     z-index: 10000;
 }
-
 #secretOverlay.active {
     opacity: 1;
     pointer-events: auto;
 }
-
 .secret-header {
-    height: 50px;
-    background: #0b0b0b;
-    border-bottom: 2px solid #550000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    flex-shrink: 0;
+    background: #111;
+    padding: 10px;
+    text-align: center;
+    color: #ff5555;
 }
-
-.secret-title {
-    color: #ff3333;
-    font-size: 22px;
-}
-
-.secret-close {
-    position: absolute;
-    right: 12px;
-    top: 9px;
-    height: 32px;
-    width: 32px;
-    background: transparent;
-    color: #ff3333;
-    border: 2px solid #550000;
-    cursor: pointer;
-    font-family: Minecraft, monospace;
-}
-
-.secret-close:hover {
-    background: #220000;
-}
-
-.secret-chat {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
 #chatMessages {
     flex: 1;
     overflow-y: auto;
-    background: #000;
     padding: 8px;
+    background: #000;
+}
+#chatInput {
+    padding: 8px;
+    border: none;
+    background: #111;
+    color: white;
+    font-family: Minecraft;
 }
 
-#chatInput {
-    padding: 6px;
-    font-family: Minecraft, monospace;
-    background: #111;
-    color: #fff;
-    border: 0;
+/* FORUMS */
+.thread {
+    border: 1px solid #333;
+    padding: 8px;
+    margin: 6px 0;
+    cursor: pointer;
 }
 </style>
 </head>
 
 <body>
 
-<!-- BOT VERIFY -->
+<!-- VERIFY -->
 <div id="verifyOverlay">
   <div class="verify-box">
-    <h3>Verify you are human</h3>
-    <p>What is <b>3 + 4</b>?</p>
+    <h3>Verify</h3>
+    <p>3 + 4 = ?</p>
     <input id="verifyInput">
-    <button onclick="verify()">Enter Site</button>
+    <button onclick="verify()">Enter</button>
     <p id="verifyMsg"></p>
   </div>
 </div>
 
 <!-- SECRET CHAT -->
 <div id="secretOverlay">
-    <div class="secret-header">
-        <div class="secret-title">NAX-CHAT</div>
-        <button class="secret-close" onclick="closeSecret()">X</button>
-    </div>
-
-    <div class="secret-chat">
-        <div id="chatMessages"></div>
-        <input id="chatInput" placeholder="Type message...">
-    </div>
+  <div class="secret-header">NAX CHAT (Alt+F1)</div>
+  <div id="chatMessages"></div>
+  <input id="chatInput" placeholder="Type message or /command">
 </div>
 
 <div class="wrapper">
 
-    <div class="panel">
-        <div class="title-row">
-            <h1>NAX Launcher</h1>
-            <div class="splash" id="splashText"></div>
-        </div>
+<!-- MAIN -->
+<div class="panel">
+<h1>NAX Launcher</h1>
+<a href="https://github.com/bb7716546/NAX-LAUNCHER/releases/download/v1.0.0/NAX_LAUNCHER.exe">Download</a>
+</div>
 
-        <div class="content-row">
-            <div class="left">
-                <img src="nax.png" alt="NAX Launcher" class="hero">
+<!-- FORUMS -->
+<div class="panel">
+<h2>Forums</h2>
+<input id="threadTitle" placeholder="Thread title">
+<button onclick="createThread()">Create</button>
+<div id="threads"></div>
+</div>
 
-                <p>
-                    NAX Launcher is a Minecraft launcher focused on
-                    classic, alpha, beta, and modern versions of Minecraft.
-                </p>
-
-                <a class="download"
-                   href="https://github.com/bb7716546/NAX-LAUNCHER/releases/download/v1.0.0/NAX_LAUNCHER.exe"
-                   target="_blank">
-                    Download NAX_LAUNCHER.exe
-                </a>
-
-                <p class="small">
-                    Windows 10 / 11 • No Microsoft login required
-                </p>
-            </div>
-
-            <div class="right">
-                <iframe
-                    src="https://www.youtube.com/embed/qBI7LNkMXEE"
-                    allowfullscreen>
-                </iframe>
-            </div>
-        </div>
-    </div>
-
-    <div class="panel">
-        <h2>Features</h2>
-        <ul>
-            <li>Classic / Alpha / Beta / Release / Snapshot support</li>
-            <li>Installed versions list</li>
-            <li>Automatic Java version selection</li>
-            <li>Offline mode</li>
-            <li>RAM selector</li>
-            <li>Crash reporting</li>
-        </ul>
-    </div>
-
-    <div class="footer">
-        NAX Launcher • Made by bb771
-    </div>
+<!-- ROLE PANEL -->
+<div class="panel">
+<h2>Admin Panel</h2>
+<input id="roleUser" placeholder="Username">
+<select id="roleValue">
+  <option>user</option>
+  <option>mod</option>
+  <option>admin</option>
+</select>
+<button onclick="setRole()">Assign Role</button>
+</div>
 
 </div>
 
 <script>
+const API = "https://YOUR_SERVER"; // CHANGE THIS
+
 /* VERIFY */
-if (localStorage.getItem("nax_verified")) {
-    verifyOverlay.style.display = "none";
-}
-
+if (localStorage.nax_verified) verifyOverlay.style.display = "none";
 function verify() {
-    if (verifyInput.value.trim() === "7") {
-        localStorage.setItem("nax_verified", "1");
-        verifyOverlay.style.display = "none";
-    } else {
-        verifyMsg.textContent = "Wrong answer.";
-    }
+  if (verifyInput.value === "7") {
+    localStorage.nax_verified = 1;
+    verifyOverlay.style.display = "none";
+  } else verifyMsg.textContent = "Wrong";
 }
 
-/* SPLASH */
-const splashes = [
-    "Now in beta!",
-    "Classic vibes!",
-    "100% offline!",
-    "ADMIN!",
-    "10k!",
-    "Download now!",
-    "10% broken"
-];
-splashText.textContent =
-    splashes[Math.floor(Math.random() * splashes.length)];
-
-/* SECRET CHAT */
-const secretOverlay = document.getElementById("secretOverlay");
-const chatMessages = document.getElementById("chatMessages");
-const chatInput = document.getElementById("chatInput");
-
-let ws = null;
-const CHAT_SERVER = "wss://YOUR_SERVER/chat"; // CHANGE THIS
-
-function openSecret() {
-    secretOverlay.classList.add("active");
-    if (!ws) connectChat();
-}
-
-function closeSecret() {
-    secretOverlay.classList.remove("active");
-}
-
-function connectChat() {
-    ws = new WebSocket(CHAT_SERVER);
-
+/* CHAT */
+let ws;
+function openChat() {
+  secretOverlay.classList.add("active");
+  if (!ws) {
+    ws = new WebSocket(API.replace("https","wss") + "/chat");
     ws.onmessage = e => {
-        const msg = JSON.parse(e.data);
-        const line = document.createElement("div");
-        line.innerHTML =
-            `<span style="color:${msg.color}">${msg.user}</span>: ${msg.text}`;
-        chatMessages.appendChild(line);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+      const m = JSON.parse(e.data);
+      chatMessages.innerHTML += `<div><b style="color:${m.color}">[${m.role}] ${m.user}</b>: ${m.text}</div>`;
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     };
-
-    ws.onclose = () => {
-        ws = null;
-    };
+  }
 }
-
-chatInput.addEventListener("keydown", e => {
-    if (e.key === "Enter" && ws) {
-        ws.send(chatInput.value);
-        chatInput.value = "";
-    }
-});
-
-/* HOTKEYS */
 window.addEventListener("keydown", e => {
-    if (e.altKey && e.key === "F1") {
-        e.preventDefault();
-        openSecret();
-    }
-    if (e.key === "Escape") {
-        closeSecret();
-    }
-}, true);
+  if (e.altKey && e.key === "F1") openChat();
+});
+chatInput.onkeydown = e => {
+  if (e.key === "Enter" && ws) {
+    ws.send(chatInput.value);
+    chatInput.value = "";
+  }
+};
+
+/* FORUMS */
+async function loadThreads() {
+  const r = await fetch(API + "/forums");
+  const data = await r.json();
+  threads.innerHTML = "";
+  data.forEach(t => {
+    const d = document.createElement("div");
+    d.className = "thread";
+    d.textContent = t.title + " by " + t.author;
+    threads.appendChild(d);
+  });
+}
+async function createThread() {
+  await fetch(API + "/forums/thread", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({title:threadTitle.value})
+  });
+  loadThreads();
+}
+loadThreads();
+
+/* ROLES */
+async function setRole() {
+  await fetch(API + "/admin/role", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      user: roleUser.value,
+      role: roleValue.value
+    })
+  });
+}
 </script>
 
 </body>
