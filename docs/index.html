@@ -92,26 +92,6 @@ h1 {
     to   { transform: scale(1.12); }
 }
 
-/* MUSIC CONTROLS */
-.music-controls {
-    margin-top: 10px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-.music-controls button {
-    font-family: Minecraft, monospace;
-    padding: 6px 10px;
-    background: #55aa55;
-    border: none;
-    cursor: pointer;
-}
-
-.music-controls input {
-    width: 100px;
-}
-
 /* LAYOUT */
 .content-row {
     display: flex;
@@ -186,9 +166,9 @@ img.hero {
     pointer-events: auto;
 }
 
-/* FULL WIDTH RED HEADER */
+/* RED HEADER */
 .secret-header {
-    height: 50px;
+    height: 48px;
     background: #8b0000;
     color: #ff3333;
     display: flex;
@@ -199,14 +179,15 @@ img.hero {
     flex-shrink: 0;
 }
 
-/* CHAT FULLSCREEN AREA */
+/* CHAT FULLSCREEN FIX */
 .secret-chat {
     flex: 1;
-    position: relative;
+    overflow: hidden;
 }
 
-/* FORCE CHATANGO TO FILL */
-.secret-chat script {
+.secret-chat iframe,
+.secret-chat object,
+.secret-chat embed {
     width: 100% !important;
     height: 100% !important;
 }
@@ -214,10 +195,6 @@ img.hero {
 </head>
 
 <body>
-
-<audio id="bgMusic" loop>
-    <source src="music.mp3" type="audio/mpeg">
-</audio>
 
 <!-- BOT VERIFY -->
 <div id="verifyOverlay">
@@ -237,9 +214,7 @@ img.hero {
     <div class="secret-chat">
         <script id="cid0020000429253934881"
                 data-cfasync="false"
-                async
-                src="//st.chatango.com/js/gz/emb.js"
-                style="width:100%; height:100%;">
+                src="//st.chatango.com/js/gz/emb.js">
 {"handle":"nax-chat","arch":"js","styles":{"a":"CC0000","b":100,"c":"FFFFFF","d":"FFFFFF","k":"CC0000","l":"CC0000","m":"CC0000","n":"FFFFFF","p":"10","q":"CC0000","r":100,"fwtickm":1}}
         </script>
     </div>
@@ -253,63 +228,61 @@ img.hero {
             <div class="splash" id="splashText"></div>
         </div>
 
-        <div class="music-controls">
-            <button onclick="toggleMusic()">Play / Pause</button>
-            <label>Volume</label>
-            <input type="range" min="0" max="1" step="0.01"
-                   value="0.3" oninput="setVolume(this.value)">
-        </div>
-
         <div class="content-row">
             <div class="left">
                 <img src="nax.png" class="hero">
-                <p>NAX Launcher is a Minecraft launcher focused on classic versions.</p>
+                <p>
+                    NAX Launcher is a Minecraft launcher focused on
+                    classic, alpha, beta, and modern versions.
+                </p>
             </div>
+
             <div class="right">
-                <iframe src="https://www.youtube.com/embed/qBI7LNkMXEE" allowfullscreen></iframe>
+                <iframe
+                    src="https://www.youtube.com/embed/qBI7LNkMXEE"
+                    allowfullscreen>
+                </iframe>
             </div>
         </div>
     </div>
 
-    <div class="footer">NAX Launcher • Made by bb771</div>
+    <div class="footer">
+        NAX Launcher • Made by bb771
+    </div>
 </div>
 
 <script>
-/* MUSIC */
-const music = document.getElementById("bgMusic");
-music.volume = 0.3;
-function toggleMusic(){ music.paused ? music.play() : music.pause(); }
-function setVolume(v){ music.volume = v; }
-
 /* VERIFY */
-if(localStorage.getItem("nax_verified")) verifyOverlay.style.display="none";
-function verify(){
-  if(verifyInput.value==="7"){
-    localStorage.setItem("nax_verified","1");
-    verifyOverlay.style.display="none";
-    music.play();
-  } else verifyMsg.textContent="Wrong answer.";
+if (localStorage.getItem("nax_verified")) {
+    verifyOverlay.style.display = "none";
+}
+
+function verify() {
+    if (verifyInput.value.trim() === "7") {
+        localStorage.setItem("nax_verified", "1");
+        verifyOverlay.style.display = "none";
+    } else {
+        verifyMsg.textContent = "Wrong answer.";
+    }
 }
 
 /* SPLASH */
-const splashes=["Now in beta!","Classic vibes!","ADMIN!","ALT + F1 👀"];
-splashText.textContent=splashes[Math.floor(Math.random()*splashes.length)];
+const splashes = [
+    "Now in beta!",
+    "Classic vibes!",
+    "ADMIN!",
+    "ALT + F1 👀"
+];
+splashText.textContent =
+    splashes[Math.floor(Math.random() * splashes.length)];
 
-/* 🔑 SECRET KEY — ESC FIXED */
+/* SECRET HOTKEY */
 document.addEventListener("keydown", e => {
     if (e.altKey && e.key === "F1") {
         e.preventDefault();
         secretOverlay.classList.add("active");
     }
-
     if (e.key === "Escape") {
-        secretOverlay.classList.remove("active");
-    }
-});
-
-/* ALSO CLICK BACKGROUND TO CLOSE */
-secretOverlay.addEventListener("click", e => {
-    if (e.target === secretOverlay) {
         secretOverlay.classList.remove("active");
     }
 });
